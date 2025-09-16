@@ -18,8 +18,6 @@ export const DropdownList: React.FC<Props> = React.memo(
     setSelectedPerson,
     selectedPerson,
   }) => {
-    console.log('Component');
-
     const [inputValue, setInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
 
