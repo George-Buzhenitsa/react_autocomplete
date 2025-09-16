@@ -4,35 +4,26 @@ import { peopleFromServer } from './data/people';
 import { DropdownList } from './components/DropdownList';
 import { Person } from './types/Person';
 
-function debounce(callback: Function, delay: number) {
-  let timerId = 0;
-
-  return (...args: any) => {
-    clearTimeout(timerId);
-    timerId = window.setTimeout(() => {
-      callback(...args);
-    }, delay)
-  }
-}
-
 export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const { name, born, died } = selectedPerson || {};
 
   const [people] = useState(peopleFromServer);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [delayTime, setDelayTime] = useState(300);
+  const [delay, setDelay] = useState(300);
 
   const suggestedPeople = useMemo(() => {
+    if (/\s+/.test(searchValue)) {
+      return people;
+    }
+
     return people.filter((person: Person) => {
       return person.name.toLowerCase().includes(searchValue.toLowerCase());
     });
-  }, [searchValue]);
-
-  const searchDebouncer = debounce(setSearchValue, delayTime);
+  }, [searchValue, people]);
 
   const handleSearchValue = (value: string) => {
-    searchDebouncer(value);
+    setSearchValue(value);
   }
 
   const onSelected = (person: Person) => {
@@ -42,7 +33,7 @@ export const App: React.FC = () => {
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
-        <h1 className="title" data-cy="title">
+        <h1 className="title" data-qa="title">
           {selectedPerson
             ? `${name} (${born} - ${died})`
             : 'No selected person'}
@@ -54,6 +45,7 @@ export const App: React.FC = () => {
           onSelected={onSelected}
           selectedPerson={selectedPerson}
           setSelectedPerson={setSelectedPerson}
+          delay={delay}
         />
       </main>
     </div>

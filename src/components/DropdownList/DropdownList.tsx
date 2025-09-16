@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Person } from '../../types/Person';
 import classNames from 'classnames';
 
@@ -8,6 +8,18 @@ interface Props {
   onSelected: (person: Person) => void;
   setSelectedPerson: (value: null) => void;
   selectedPerson: Person | null;
+  delay: number;
+}
+
+function debounce(callback: Function, delayTime: number) {
+  let timerId = 0;
+
+  return (...args: any) => {
+    clearTimeout(timerId);
+    timerId = window.setTimeout(() => {
+      callback(...args);
+    }, delayTime);
+  };
 }
 
 export const DropdownList: React.FC<Props> = React.memo(
@@ -17,9 +29,15 @@ export const DropdownList: React.FC<Props> = React.memo(
     onSelected,
     setSelectedPerson,
     selectedPerson,
+    delay,
   }) => {
     const [inputValue, setInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
+
+    const debounceAutocomplete = useCallback(
+      debounce(handleSearchValue, delay),
+      [],
+    );
 
     const handleInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
       setInputValue(event.target.value);
@@ -28,7 +46,7 @@ export const DropdownList: React.FC<Props> = React.memo(
         setSelectedPerson(null);
       }
 
-      handleSearchValue(event.target.value);
+      debounceAutocomplete(event.target.value);
     };
 
     return (
@@ -39,7 +57,7 @@ export const DropdownList: React.FC<Props> = React.memo(
               type="text"
               placeholder="Enter a part of the name"
               className="input"
-              data-cy="search-input"
+              data-qa="search-input"
               value={inputValue}
               onChange={handleInputValue}
               onFocus={() => setIsFocused(true)}
@@ -51,14 +69,14 @@ export const DropdownList: React.FC<Props> = React.memo(
             />
           </div>
 
-          <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
+          <div className="dropdown-menu" role="menu" data-qa="suggestions-list">
             <div className="dropdown-content">
               {people.map((person: Person) => {
                 return (
                   <a
                     key={person.name}
                     className="dropdown-item"
-                    data-cy="suggestion-item"
+                    data-qa="suggestion-item"
                     onClick={() => {
                       onSelected(person);
                       setInputValue(person.name);
@@ -82,7 +100,7 @@ export const DropdownList: React.FC<Props> = React.memo(
             is-align-self-flex-start
           "
             role="alert"
-            data-cy="no-suggestions-message"
+            data-qa="no-suggestions-message"
           >
             <p className="has-text-danger">No matching suggestions</p>
           </div>
