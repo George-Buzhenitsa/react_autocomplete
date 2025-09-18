@@ -8,23 +8,19 @@ export const App: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const { name, born, died } = selectedPerson || {};
 
+  const [inputValue, setInputValue] = useState<string>('');
   const [people] = useState(peopleFromServer);
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [delay, setDelay] = useState(300);
+  const [delay] = useState(300);
 
   const suggestedPeople = useMemo(() => {
-    if (/\s+/.test(searchValue)) {
-      return people;
+    if (/\s{2,}/.test(inputValue)) {
+      return [];
     }
 
     return people.filter((person: Person) => {
-      return person.name.toLowerCase().includes(searchValue.toLowerCase());
+      return person.name.toLowerCase().includes(inputValue.toLowerCase());
     });
-  }, [searchValue, people]);
-
-  const handleSearchValue = (value: string) => {
-    setSearchValue(value);
-  }
+  }, [people, inputValue]);
 
   const onSelected = (person: Person) => {
     setSelectedPerson(person);
@@ -41,11 +37,12 @@ export const App: React.FC = () => {
 
         <DropdownList
           people={suggestedPeople}
-          handleSearchValue={handleSearchValue}
           onSelected={onSelected}
           selectedPerson={selectedPerson}
           setSelectedPerson={setSelectedPerson}
           delay={delay}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
         />
       </main>
     </div>

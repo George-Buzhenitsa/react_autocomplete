@@ -4,11 +4,12 @@ import classNames from 'classnames';
 
 interface Props {
   people: Person[];
-  handleSearchValue: (value: string) => void;
   onSelected: (person: Person) => void;
   setSelectedPerson: (value: null) => void;
   selectedPerson: Person | null;
   delay: number;
+  inputValue: string;
+  setInputValue: (value: string) => void;
 }
 
 function debounce(callback: Function, delayTime: number) {
@@ -25,17 +26,17 @@ function debounce(callback: Function, delayTime: number) {
 export const DropdownList: React.FC<Props> = React.memo(
   ({
     people,
-    handleSearchValue,
     onSelected,
     setSelectedPerson,
     selectedPerson,
     delay,
+    inputValue,
+    setInputValue
   }) => {
-    const [inputValue, setInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
 
     const debounceAutocomplete = useCallback(
-      debounce(handleSearchValue, delay),
+      debounce(setInputValue, delay),
       [],
     );
 
@@ -51,7 +52,7 @@ export const DropdownList: React.FC<Props> = React.memo(
 
     return (
       <>
-        <div className={classNames('dropdown', { 'is-active': isFocused })}>
+        <div className={classNames('dropdown', { 'is-active': isFocused})}>
           <div className="dropdown-trigger">
             <input
               type="text"
