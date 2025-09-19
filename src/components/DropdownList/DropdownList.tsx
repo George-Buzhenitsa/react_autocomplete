@@ -62,11 +62,7 @@ export const DropdownList: React.FC<Props> = React.memo(
               value={inputValue}
               onChange={handleInputValue}
               onFocus={() => setIsFocused(true)}
-              onBlur={() =>
-                setTimeout(() => {
-                  setIsFocused(false);
-                }, 40)
-              }
+              onBlur={() => setIsFocused(false)}
             />
           </div>
 
@@ -78,7 +74,7 @@ export const DropdownList: React.FC<Props> = React.memo(
                     key={person.name}
                     className="dropdown-item"
                     data-qa="suggestion-item"
-                    onClick={() => {
+                    onMouseDown={() => {
                       onSelected(person);
                       setInputValue(person.name);
                       setIsFocused(false);
